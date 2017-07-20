@@ -9,6 +9,9 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using HolidayManagement.Models;
+using HolidayManagement.Repository;
+using HolidayManagement.Repository.Models;
+using System.Collections.Generic;
 
 namespace HolidayManagement.Controllers
 {
@@ -17,7 +20,7 @@ namespace HolidayManagement.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-
+        HolidayManagementContext newHolidayManagementContext = new HolidayManagementContext();
         public AccountController()
         {
         }
@@ -139,6 +142,7 @@ namespace HolidayManagement.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
+            
             return View();
         }
 
@@ -153,17 +157,26 @@ namespace HolidayManagement.Controllers
             {
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
                 var result = await UserManager.CreateAsync(user, model.Password);
+                
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    return RedirectToAction("Index", "Home");
+
+                    await UserManager.AddToRoleAsync(user.Id, "Employee");
+
+                    newHolidayManagementContext.UserDetails.Add(
+                        new UserDetails() { FirstName = model.FirstName, LastName = model.LastName, UserID = user.Id }                      
+                        );
+                    
+                    newHolidayManagementContext.SaveChanges();
+                    return RedirectToAction("Index", "Dashboard");
                 }
                 AddErrors(result);
             }
@@ -395,6 +408,12 @@ namespace HolidayManagement.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        public ActionResult RedirectToDashboard()
+        {
+            return RedirectToDashboard();
+        }
+
+
         //
         // GET: /Account/ExternalLoginFailure
         [AllowAnonymous]
@@ -419,7 +438,6 @@ namespace HolidayManagement.Controllers
                     _signInManager = null;
                 }
             }
-
             base.Dispose(disposing);
         }
 
@@ -443,13 +461,123 @@ namespace HolidayManagement.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<ActionResult> CreateUser(UserDetails model)
+        {
+            bool isWorking = true;
+            List<string> messages = new List<string>();              
+          
+            var user = new ApplicationUser { UserName = model.AspNetUser.Email, Email = model.AspNetUser.Email };
+            var result = await UserManager.CreateAsync(user, "Password!1");
+            try
+            {              
+                if (result.Succeeded)
+                {
+                    var newUser = new UserDetails()
+                    {
+                        UserID = user.Id,
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        HireDate = model.HireDate,
+                        MaxDays = model.MaxDays,
+                        TeamId = model.TeamId
+                    };
+
+                    if (model.AspNetUser != null && model.AspNetUser.Roles.Count() > 0)
+                    {
+                        string roleId = model.AspNetUser.Roles.FirstOrDefault().RoleId;
+                        var role = newHolidayManagementContext.Roles.FirstOrDefault(r => r.Id == roleId);
+                        if (role != null)
+                        {
+                            await UserManager.AddToRoleAsync(user.Id, role.Name);
+                        }
+                    }
+
+                    newHolidayManagementContext.UserDetails.Add(newUser);
+                    newHolidayManagementContext.SaveChanges();
+                    model.ID = newUser.ID;
+                }
+                else
+                {
+                    foreach (string x in result.Errors)
+                    {
+                        messages.Add(x);
+                    }
+                    isWorking = false;
+                }
+            }catch(Exception exception)
+            {
+                Console.WriteLine(exception.ToString());
+                isWorking = false;
+            }
+
+            return Json(new { successed = isWorking, messages = messages, newUser = model}, JsonRequestBehavior.DenyGet);        
+        }
+
+
+        [HttpPost]
+        public async Task<ActionResult> EditUser(UserDetails model)
+        {
+            bool isWorking = true;
+            List<string> messages = new List<string>();
+       
+            try
+            {
+                var user = newHolidayManagementContext.UserDetails.FirstOrDefault(m => m.ID == model.ID);
+                if (user != null)
+                {
+                    if ((newHolidayManagementContext.UserDetails.Where(x => x.AspNetUser.Email == model.AspNetUser.Email).Count() > 0) && model.AspNetUser.Email != user.AspNetUser.Email)
+                    {
+                        messages.Add("Email" + " " + " taken.");
+                        isWorking = false;
+                    }
+                    else
+                    {
+                        var roleID = model.AspNetUser.Roles.FirstOrDefault().RoleId;
+                        var role = newHolidayManagementContext.Roles.Where(x => x.Id == roleID).FirstOrDefault();
+                        if (user.AspNetUser.Roles.Count() > 0)
+                        {
+                            var roles = await UserManager.GetRolesAsync(user.AspNetUser.Id);
+                            if (roles.Count() > 0)
+                                await UserManager.RemoveFromRolesAsync(user.AspNetUser.Id, roles.ToArray());
+                        }
+
+                        await UserManager.AddToRoleAsync(user.AspNetUser.Id, role.Name);
+
+                        user.AspNetUser.Email = model.AspNetUser.Email;
+                        //user.AspNetUser.UserName = model.AspNetUser.UserName;
+                        user.FirstName = model.FirstName;
+                        user.LastName = model.LastName;
+                        user.HireDate = model.HireDate;                        
+                        user.MaxDays = model.MaxDays;                
+                        user.TeamId = model.TeamId;
+                        newHolidayManagementContext.SaveChanges();
+                    }
+                }
+                else
+                {
+                    messages.Add("User not found");
+                    isWorking = false;
+                }
+            }
+            catch (Exception exception)
+            {
+                messages.Add(exception.ToString());
+                isWorking = false;
+            }
+
+            return Json(new { successed = isWorking, messages = messages, newUser = model }, JsonRequestBehavior.DenyGet);
+            //return RedirectToAction("Index", "Dashboard");
+
+        }
+
         private ActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
             }
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Dashboard");
         }
 
         internal class ChallengeResult : HttpUnauthorizedResult

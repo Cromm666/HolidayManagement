@@ -1,0 +1,47 @@
+﻿<!doctype html>
+<html>
+<head>
+</head>
+<body>
+    <div>
+        <div class="container" id="headA">
+            <div class="row">
+                <div class="col-md-3 ">
+                    <button class="buttonDefinition" data-bind="text: previousMonth, click: showPreViousMonth" style="float: left"><<</button>
+                </div>
+                <div id="monthID" class="col-md-3" data-bind="text: monthList[currentMonth()]">
+                </div>
+                <div id="monthID" class="col-md-3" data-bind="text: currentYear">
+                </div>
+                <div class="col-md-3">
+                    <button class="buttonDefinition" data-bind="text: nextMonth, click: showNextMonth" style="float: right"></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row" data-bind="foreach: days">
+                <div class="col-md-4" id="calendarDay" data-bind="text: Day() + ' ' + Name(), css:{bankHolidayColor: IsBankHoliday(), weekEndColor: IsFreeDay(), vacationColor: IsVacation()}"></div>
+
+            </div>
+
+        </div>
+    </div>
+    <div>
+
+
+    </div>
+    <div id="colorsHH">
+        Blue: Week Ends
+    </div>
+    <div id="colorsHHH">
+        Orange: Vacations
+    </div>
+    <div id="colorsHHHH">
+        Red: Bank Holidays
+    </div>
+
+</body>
+
+
+</html>

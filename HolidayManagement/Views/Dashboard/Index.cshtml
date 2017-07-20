@@ -1,0 +1,48 @@
+﻿@model HolidayManagement.Models.DashboardViewModel
+@{
+    ViewBag.Title = "Dashboard";
+}
+
+<div class="navbar-collapse collapse" >
+    <ul class="nav navbar-nav">
+@if (User.IsInRole("Admin") || User.IsInRole("HR"))
+{
+        <li><a data-toggle="tab" href="#users" class="glyphicon glyphicon-user"> Users </a></li>
+}
+        <li><a data-toggle="tab" href="#mycalendar" class="glyphicon glyphicon-list-alt"> My Calendar </a></li>
+        <li><a data-toggle="tab" href="#groupmanagement" class="glyphicon glyphicon-th"> Vacations </a></li>
+        <li><a data-toggle="tab" href="#settings" class="glyphicon glyphicon-cog"> Settings </a></li>
+    </ul>
+</div>
+
+<div class="tab-content">
+    @if(User.IsInRole("Admin") || User.IsInRole("HR"))
+    {
+    <div id="users" class="tab-pane fade in active">
+        @Html.Partial("_Users")
+    </div>
+    }
+    <div id="mycalendar" class="tab-pane fade">
+        @Html.Partial("_MyCalendar")
+    </div>
+    <div id="groupmanagement" class="tab-pane fade">
+        @Html.Partial("_GroupManagement")
+    </div>
+    <div id="settings" class="tab-pane fade">
+        @Html.Partial("_Settings")
+    </div>
+</div>
+
+
+<script type="text/javascript" src="~/Scripts/Dashboard/DashboardModel.js"></script>
+<script src="~/Scripts/Dashboard/UserModel.js"></script>
+<script src="~/Scripts/Dashboard/TeamModel.js"></script>
+<script src="~/Scripts/Dashboard/RoleModel.js"></script>
+<script src="~/Scripts/Dashboard/BankHolidayModel.js"></script>
+<script src="~/Scripts/Dashboard/VacationModel.js"></script>
+<script src="~/Scripts/Dashboard/DayModel.js"></script>
+<script src="~/Scripts/Dashboard/MonthModel.js"></script>
+
+<script type="text/javascript">
+    InitializeDashboardModel(@Html.Raw(Json.Encode(Model)));
+</script>

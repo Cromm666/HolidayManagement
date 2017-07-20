@@ -6,7 +6,7 @@ namespace HolidayManagement.Migrations
     using System.Data.Entity.Migrations.Infrastructure;
     using System.Resources;
     
-    [GeneratedCode("EntityFramework.Migrations", "6.1.2-31219")]
+    [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
     public sealed partial class HolidayManagement : IMigrationMetadata
     {
         private readonly ResourceManager Resources = new ResourceManager(typeof(HolidayManagement));

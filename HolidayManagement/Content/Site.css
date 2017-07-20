@@ -22,3 +22,88 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.rowBorder {
+    border: thin solid black;
+}
+
+.bankHolidayColor {
+    background-color: red;
+    font-weight: 500;
+    color: black;
+}
+
+.weekEndColor {
+    background-color: cornflowerblue;
+    font-weight: 500;
+    color: black;
+}
+
+.vacationColor {
+    background-color: orange;
+    color: black;
+}
+
+#headA {
+    font-size: 30px;
+}
+
+input:focus {
+    outline: none !important;
+}
+
+.buttonDefinition {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    color: black;
+    font-weight: 500;
+    border-radius: 12px;
+    background-color: lightblue;
+    outline: none;
+    border: 0;
+    width: 180px;
+    height: 42px;
+    margin: 12px;
+}
+
+#monthID {
+    background-color: black;
+    border: solid medium black;
+    font-weight: 700;
+    text-decoration: solid black;
+    color: cornflowerblue;
+    outline: none;
+    border-radius: 10px;
+    width: 260px;
+    margin: 15px;
+}
+
+.col-md-4 {
+    border: solid thin lightblue;
+}
+
+#colorsHH {
+    background-color: cornflowerblue;
+    width: 150px;
+    color: black;
+    margin: 20px;
+}
+
+#colorsHHH {
+    background-color: orange;
+    width: 150px;
+    color: black;
+    margin: 20px;
+}
+
+#colorsHHHH {
+    background-color: red;
+    width: 150px;
+    color: black;
+    margin: 20px;
+}
+#calendarDay{
+    
+    margin: 10px;
+    width: 140px;
+
+}

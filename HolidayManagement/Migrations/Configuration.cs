@@ -6,6 +6,9 @@ namespace HolidayManagement.Migrations
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
+    using Microsoft.AspNet.Identity.EntityFramework;
+    using Microsoft.AspNet.Identity;
+    using Repository;
 
     internal sealed class Configuration : DbMigrationsConfiguration<Repository.HolidayManagementContext>
     {
@@ -24,7 +27,7 @@ namespace HolidayManagement.Migrations
             new Team{Description="Mobile"},
             new Team{Description="Test"},
             };
-
+            
             teams.ForEach(t => context.Teams.Add(t));
             context.SaveChanges();
 
@@ -44,9 +47,23 @@ namespace HolidayManagement.Migrations
                   new BankHoliday { Description="25 December", Day=25, Month=12},
                   new BankHoliday { Description="26 December", Day=26, Month=12}
               };
-
+        
             bankHolidays.ForEach(bh => context.BankHolidays.Add(bh));
             context.SaveChanges();
+
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new HolidayManagementContext()));
+            roleManager.Create(new IdentityRole()
+            {
+                Name = "Admin"
+            });
+            roleManager.Create(new IdentityRole()
+            {
+                Name = "HR"
+            });
+            roleManager.Create(new IdentityRole()
+            {
+                Name = "Employee"
+            });
 
             var vacationStates = new List<VacationState> {
                   new VacationState { Description="Planned" },
