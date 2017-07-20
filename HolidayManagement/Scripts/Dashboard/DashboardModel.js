@@ -22,6 +22,7 @@
     this.users = ko.observableArray();
     this.teams = ko.observableArray();
     this.roles = ko.observableArray();
+    this.vacatationStates = ko.observableArray();
 
     this.bankHolidays = ko.observableArray();
     this.vacations = ko.observableArray();
@@ -48,6 +49,11 @@
         });
         _self.roles(roles);
 
+        var vacatationStates = _.map(data.VacationStates, function (state) {
+            return new VacationStateModel(state);
+        });
+        _self.vacatationStates(vacatationStates);
+
         var users = _.map(data.UserList, function (user) {
             user.HireDate = dateTimeReviver(user.HireDate);
             return new UserModel(user);
@@ -63,8 +69,13 @@
         var vacations = _.map(data.Calendar.Vacations, function (vacation) {
             vacation.StartDate = dateTimeReviver(vacation.StartDate);
             vacation.EndDate = dateTimeReviver(vacation.EndDate);
-            return new VacationModel(vacation);
+            var vacationM = new VacationModel(vacation);
+           
+            vacationM.StateDescription(vacation.State.Description);
+            return vacationM;
         });
+
+
 
         _self.users(users);
         _self.teams(teams);

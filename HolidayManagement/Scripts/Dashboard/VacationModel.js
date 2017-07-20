@@ -8,6 +8,7 @@
     this.Day = ko.observable();
     this.Month = ko.observable();
     this.Date = ko.observable();
+    this.StateDescription = ko.observableArray();
 
     if (data != null) {
         _self.Id(data.Id);
@@ -18,5 +19,6 @@
         _self.Day(data.Day);
         _self.Month(data.Month);
         _self.Date(data.Date);
+        _self.StateDescription(data.StateDescription);
     }
 }

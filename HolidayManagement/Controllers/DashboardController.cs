@@ -34,6 +34,7 @@ namespace HolidayManagement.Controllers
         public TeamRepository TeamRepository = new TeamRepository();
         public BankHolidayRepository BankHolidayRepository = new BankHolidayRepository();
         public VacationRepository VacationRepository = new VacationRepository();
+        public VacationStateRepository VacationStateRepo = new VacationStateRepository();
         
         // GET: Dashboard
         public ActionResult Index()
@@ -43,12 +44,14 @@ namespace HolidayManagement.Controllers
             var roleStore = new RoleStore<IdentityRole>();
             var roleManager = new RoleManager<IdentityRole>(roleStore);
             var roles = roleManager.Roles.ToList();
-
+           // var vacationStates = VacationStateRepo.GetVacationStates();
             DashboardViewModel dashboardViewModel = new DashboardViewModel()
             {
                 UserList = users != null ? users : null,
                 TeamList = teams,
-                RoleList = roles,                             
+                RoleList = roles,
+                //VacationStates = vacationStates
+                                            
             };
             MyCalendarViewModel MyCalendar = new MyCalendarViewModel();
             MyCalendar.BankHolidays = BankHolidayRepository.GetBankHolidays();

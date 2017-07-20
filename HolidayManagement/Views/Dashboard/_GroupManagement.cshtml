@@ -5,10 +5,10 @@
 <!DOCTYPE html>
 
 <div>
-    <button type="button" class="btn btn-outline-primary-sm buttonDefinition" data-toggle="modal" data-target="#myModal1">
+    <button type="button" class="btn btn-outline-primary-sm buttonDefinition" data-toggle="modal" data-target="#myModal2">
         Add Holiday
     </button>
-    <div id="myModal1" class="modal fade" role="dialog" aria-labelledby="myModal" aria-hidden="true">
+    <div id="myModal2" class="modal fade" role="dialog" aria-labelledby="myModal1" aria-hidden="true">
         >
         <div class="modal-dialog">
             <!-- Modal content-->
@@ -49,12 +49,14 @@
             <tr>
                 <th>Vacation from</th>
                 <th>Vacation to</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody data-bind="foreach: vacations">
             <tr>
                 <td data-bind="text:StartDate"></td>
                 <td data-bind="text:EndDate"></td>
+                <td data-bind="text:StateDescription"></td>
             </tr>
         </tbody>
     </table>
